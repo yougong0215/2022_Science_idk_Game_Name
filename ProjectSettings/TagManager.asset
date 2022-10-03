@@ -6,6 +6,8 @@ TagManager:
   tags:
   - n
   - p
+  - np
+  - pn
   layers:
   - Default
   - TransparentFX

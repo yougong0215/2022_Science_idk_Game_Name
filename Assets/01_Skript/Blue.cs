@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,16 +28,10 @@ public class Blue : MonoBehaviour
 
     }
 
-    bool number = false;
-    int o = 0;
-    int check = 0;
-
-    bool nDiod = false;
-    bool pDiod = false;
-
+    bool np = false;
+    bool pn = false;
     Ray ray;
-    RaycastHit hit1;
-    RaycastHit hit2;
+    RaycastHit hit;
 
     private void OnEnable()
     {
@@ -46,104 +39,112 @@ public class Blue : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.X))
         {
-            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (number == true)
+            if (np == true)
             {
-                number = false;
                 Blues.color = Color.red;
                 Reds.color = Color.blue;
+                np = false;
             }
-            else if (number == false)
+            else
             {
                 Blues.color = Color.blue;
                 Reds.color = Color.red;
-                number = true;
+                np = true;
             }
-            if (Physics.Raycast(ray, out hit1) && number == false)
-            {
-                try
-                {
-                    F = hit1.collider.gameObject.transform;
-                }
-                catch
-                {
-                    Debug.Log("±×µý°Å ¾øÀ½");
-                }
+            pn = false;
 
-                if (F.gameObject.CompareTag("n") || F.gameObject.CompareTag("p"))
+        }
+        if (F != null)
+        {
+
+            if (np == true)
+            {
+                if (F.CompareTag("n") == true)
                 {
-                    
-                    F = hit1.collider.gameObject.transform;
-                    pDiod = true;
+                    DrawLine(mt2, transform.position, F.transform.position, 0.2f);
+                    pn = true;
                 }
                 else
                 {
-                    pDiod = false;
+                    DrawLine(mt1, transform.position, F.transform.position, 0.2f);
                 }
-
+                if (pn == true)
+                {
+                    StartCoroutine(Moveing(F, "np"));
+                    pn = false;
+                }
             }
-            else if (Physics.Raycast(ray, out hit2) && number == true)
+            else if (np == false)
             {
-                try
+                if (F.CompareTag("p") == true)
                 {
-                    S = hit2.collider.gameObject.transform;
-                }
-                catch
-                {
-                    Debug.Log("±×µý°Å ¾øÀ½");
-                }
-                if (S.gameObject.CompareTag("n") || S.gameObject.CompareTag("p"))
-                {
-                    
-                    S = hit2.collider.gameObject.transform;
-                    nDiod = true;
+                    DrawLine(mt1, transform.position, F.transform.position, 0.2f);
+                    pn = true;
                 }
                 else
                 {
-                    nDiod = false;
+                    DrawLine(mt2, transform.position, F.transform.position, 0.2f);
                 }
-
-
+                if (pn == true)
+                {
+                    StartCoroutine(Moveing(F, "pn"));
+                    pn = false;
+                }
             }
-        }
-        if (nDiod && pDiod)
-        {
-            if (F.gameObject.CompareTag("n") && S.gameObject.CompareTag("p"))
+            if (np == true)
             {
-                StartCoroutine(Moveing(F, S));
-                nDiod = false;
-                pDiod = false;
+                Blues.color = Color.red;
+                Reds.color = Color.blue;
+                np = false;
+            }
+            else
+            {
+                Blues.color = Color.blue;
+                Reds.color = Color.red;
+                np = true;
+            }
+            F = null;
+        }
+
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit))
+            {
+                if (hit.collider.gameObject.CompareTag("n") || hit.collider.gameObject.CompareTag("p"))
+                {
+                    F = hit.collider.gameObject.transform;
+                }
+                else
+                {
+                    pn = false;
+                }
+            }
+            else
+            {
+                asdfasasf.Instance.Damaged();
             }
         }
-        if (pDiod)
-        {
-            
-            DrawLine(mt2, F.transform.position, transform.position + new Vector3(0.5f, -6, 0), Color.red, 0.03f);
 
-        }
-        if (nDiod)
-        {
-            DrawLine(mt1, S.transform.position, transform.position + new Vector3(-0.5f, -7, 0), Color.red, 0.03f);
-        }
     }
 
-    IEnumerator Moveing(Transform First, Transform Second)
+    IEnumerator Moveing(Transform First, string np)
     {
+        Transform Second = null;
         while (true)
         {
+            Second = GameObject.FindGameObjectWithTag(np).transform;
             try
             {
-                _mt[2].SetColor("_EmissionColor", Color.white * (SCores.Instance.returnScore())/200f);
-                DrawLine(mt3, First.transform.position, Second.transform.position, Color.red, 0.03f);
-                Vector3 dir1 = First.transform.position - Second.transform.position;
-                dir1.Normalize();
+                _mt[2].SetColor("_EmissionColor", Color.white * (SCores.Instance.returnScore()) / 200f);
+                DrawLine(mt3, First.transform.position, Second.transform.position, 0.03f);
                 Vector3 dir2 = Second.transform.position - First.transform.position;
                 dir2.Normalize();
 
                 First.transform.position += dir2 * speed * Time.deltaTime;
-                Second.transform.position += dir1 * speed * Time.deltaTime;
             }
             catch
             {
@@ -157,18 +158,17 @@ public class Blue : MonoBehaviour
         }
     }
 
-    void DrawLine(Material mtt, Vector3 start, Vector3 end, Color color, float duration = 0.2f)
+    void DrawLine(Material mtt, Vector3 start, Vector3 end, float duration = 0.2f)
     {
         GameObject myLine = new GameObject();
         myLine.transform.position = start;
         myLine.AddComponent<LineRenderer>();
         LineRenderer lr = myLine.GetComponent<LineRenderer>();
         lr.material = mtt;
-        lr.SetColors(color, color);
         lr.SetWidth(0.1f, 0.1f);
         lr.SetPosition(0, start);
         lr.SetPosition(1, end);
         GameObject.Destroy(myLine, duration);
     }
-  
+
 }

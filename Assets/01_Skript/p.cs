@@ -1,17 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
-
-public class n : MonoBehaviour
+public class p : MonoBehaviour
 {
-    [SerializeField] GameObject P;    
-    
+    [SerializeField] GameObject P;
     private void OnCollisionEnter(Collision collision)
     {
         P.transform.position = transform.position;
-        if (collision.gameObject.CompareTag("p"))
+        if (collision.gameObject.CompareTag("n"))
         {
             SCores.Instance.GetScore();
             Instantiate(P);
