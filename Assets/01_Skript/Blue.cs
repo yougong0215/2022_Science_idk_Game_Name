@@ -68,6 +68,7 @@ public class Blue : MonoBehaviour
                 }
                 else
                 {
+                    asdfasasf.Instance.Damaged();
                     DrawLine(mt1, transform.position, F.transform.position, 0.2f);
                 }
                 if (pn == true)
@@ -85,6 +86,7 @@ public class Blue : MonoBehaviour
                 }
                 else
                 {
+                    asdfasasf.Instance.Damaged();
                     DrawLine(mt2, transform.position, F.transform.position, 0.2f);
                 }
                 if (pn == true)

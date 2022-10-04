@@ -10,12 +10,23 @@ public class SceneLoader : MonoBehaviour
     public void Loader(string a)
     {
         SceneManager.LoadScene(a);
-        StartCoroutine(A(a));
+    }
+
+    public void extititi()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+    Application.Quit();
+#endif
     }
     private void Update()
     {
-        t = Time.deltaTime;
-        at.color = new Color(0,0,0,t);
+        Cursor.lockState = CursorLockMode.None;
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            SceneManager.LoadScene(1);
+        }
     }
 
     IEnumerator A(string a)
